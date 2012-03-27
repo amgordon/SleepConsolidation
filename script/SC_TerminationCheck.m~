@@ -1,0 +1,14 @@
+function [] = SC_TerminationCheck(subInput, terminationCode )
+
+sca
+
+
+if strcmp(subInput, terminationCode)
+    sca;
+    ListenChar(1);
+    error('Script terminated.')
+end
+
+
+end
+
