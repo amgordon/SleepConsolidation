@@ -1,0 +1,5 @@
+This repository contains code relevant to the running of a study on memory consolidation processes during sleep.  
+
+'Scripts' contains scripts that will present an experiment to subjects via Matlab PsychToolbox.  
+
+'Analysis' contains scripts for analyzing data collected with this experiment.
