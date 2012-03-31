@@ -1,9 +1,9 @@
-function  SC_calculatePayment(testDataMat)
+function SC_calculatePayment(dataMat)
 
 valPerCorrectTrial = 1;
-nSubsetTrials = 10;
+nSubsetTrials = 5;
 
-d = load(testDataMat);
+d = load(dataMat);
 
 if isfield(d, 'TestData')
     theData = d.TestData.block;
@@ -15,17 +15,27 @@ idxCleanResp = find(~cellfun(@isempty, theData.typedResp));
 nTrials = length(idxCleanResp);
 
 if nTrials<nSubsetTrials
-   warning('not enough trials, using %g of them', nTrials); 
+   warning('not enough trials, using %g of them', nTrials);
    nSubsetTrials = nTrials;
 end
 
 
 idxShuffle_h = shuffle(idxCleanResp);
 idxShuffle = idxShuffle_h(1:nSubsetTrials);
-
+ 
 
 resps = upper(theData.typedResp(idxShuffle))';
-answers = theData.correctAssociate(idxShuffle);
+
+if isfield(d.theData, 'correctAssociate')
+    answers = d.theData.correctAssociate(idxShuffle);
+elseif isfield(d.theData, 'B')
+    answers = d.theData.B;
+elseif isfield(d.theData, 'C')
+    answers = d.theData.C;
+else
+    error('unrecognized behavioral file')
+end
+
 
 detectCorrect = sum(strcmp(resps,answers));
 
