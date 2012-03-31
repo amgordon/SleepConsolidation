@@ -19,7 +19,7 @@ theData = list;
 
 scrsz = get(0,'ScreenSize');
 
-% Diagram of trial
+% Diagram of a trial
 
 soundTime = 1.5;
 interTrialTime = 1.5;
