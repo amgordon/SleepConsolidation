@@ -1,9 +1,9 @@
-function  SC_calculatePayment(dataMat)
+function  SC_calculatePayment(testDataMat)
 
 valPerCorrectTrial = 1;
 nSubsetTrials = 10;
 
-d = load(dataMat);
+d = load(testDataMat);
 
 if isfield(d, 'TestData')
     theData = d.TestData.block;
