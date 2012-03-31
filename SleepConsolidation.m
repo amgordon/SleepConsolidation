@@ -14,10 +14,11 @@ else
     thePath.stim = fullfile(thePath.start, 'stim');
     thePath.data = fullfile(thePath.start, 'data');
     thePath.list = fullfile(thePath.start, 'list');
-
+    thePath.SVLO = fullfile(thePath.start, 'SVLO');
+    
     fn = fieldnames(thePath);
     for f = 1:length(fn)
-       addpath(thePath.(fn{f})) 
+       addpath(genpath(thePath.(fn{f})))
     end
     
     cd(thePath.start);
