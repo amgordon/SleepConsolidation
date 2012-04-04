@@ -29,9 +29,9 @@ resps = upper(theData.typedResp(idxShuffle))';
 if isfield(d.theData, 'correctAssociate')
     answers = d.theData.correctAssociate(idxShuffle);
 elseif isfield(d.theData, 'B')
-    answers = d.theData.B;
+    answers = d.theData.B(idxShuffle);
 elseif isfield(d.theData, 'C')
-    answers = d.theData.C;
+    answers = d.theData.C(idxShuffle);
 else
     error('unrecognized behavioral file')
 end
