@@ -97,36 +97,36 @@ for s = 1:length(subs)
     idx.CRetrievalPracticeCor = ismember(A, A_CRPCor);
     
     %% sample size in each group.  
-    N(s,1) = sum(idx.interference .* idx.CCued .* ~idx.junkStim);
+    N(s,3) = sum(idx.interference .* idx.CCued .* ~idx.junkStim);
     N(s,2) = sum(idx.interference .* idx.BCued .* ~idx.junkStim);
-    N(s,3) = sum(idx.interference .* idx.noCue .* ~idx.junkStim);
-    N(s,4) = sum(~idx.interference .* idx.BCued .* ~idx.junkStim);
-    N(s,5) = sum(~idx.interference .* idx.noCue .* ~idx.junkStim);
+    N(s,1) = sum(idx.interference .* idx.noCue .* ~idx.junkStim);
+    N(s,5) = sum(~idx.interference .* idx.BCued .* ~idx.junkStim);
+    N(s,4) = sum(~idx.interference .* idx.noCue .* ~idx.junkStim);
     
     %% results structures
     
     %was test accuracy different across interference and cueing categories?
-    res.TestAccByMemoryCategory(s,1) = sum(idx.correct .* idx.interference .* idx.CCued .* ~idx.junkStim) / N(s,1);
+    res.TestAccByMemoryCategory(s,3) = sum(idx.correct .* idx.interference .* idx.CCued .* ~idx.junkStim) / N(s,3);
     res.TestAccByMemoryCategory(s,2) = sum(idx.correct .* idx.interference .* idx.BCued .* ~idx.junkStim) / N(s,2);
-    res.TestAccByMemoryCategory(s,3) = sum(idx.correct .* idx.interference .* idx.noCue .* ~idx.junkStim) / N(s,3);
-    res.TestAccByMemoryCategory(s,4) = sum(idx.correct .* ~idx.interference .* idx.BCued .* ~idx.junkStim) / N(s,4);
-    res.TestAccByMemoryCategory(s,5) = sum(idx.correct .* ~idx.interference .* idx.noCue .* ~idx.junkStim) / N(s,5);
+    res.TestAccByMemoryCategory(s,1) = sum(idx.correct .* idx.interference .* idx.noCue .* ~idx.junkStim) / N(s,1);
+    res.TestAccByMemoryCategory(s,5) = sum(idx.correct .* ~idx.interference .* idx.BCued .* ~idx.junkStim) / N(s,5);
+    res.TestAccByMemoryCategory(s,4) = sum(idx.correct .* ~idx.interference .* idx.noCue .* ~idx.junkStim) / N(s,4);
     
     %was rehearsal accuracy across AB and AC rehearsal trials?
     res.Rehearsal(s,1) = mean(allAB.corReh);
     res.Rehearsal(s,2) = mean(allAC.corReh);
     
     %was "B" rehearsal performance constant across memory categories?
-    res.BRehActByMemoryCategory(s,1) = sum(idx.BRetrievalPracticeCor .* idx.interference .* idx.CCued .* ~idx.junkStim) / N(s,1);
+    res.BRehActByMemoryCategory(s,3) = sum(idx.BRetrievalPracticeCor .* idx.interference .* idx.CCued .* ~idx.junkStim) / N(s,3);
     res.BRehActByMemoryCategory(s,2) = sum(idx.BRetrievalPracticeCor .* idx.interference .* idx.BCued .* ~idx.junkStim) / N(s,2);
-    res.BRehActByMemoryCategory(s,3) = sum(idx.BRetrievalPracticeCor.* idx.interference .* idx.noCue .* ~idx.junkStim) / N(s,3);
-    res.BRehActByMemoryCategory(s,4) = sum(idx.BRetrievalPracticeCor .* ~idx.interference .* idx.BCued .* ~idx.junkStim) / N(s,4);
-    res.BRehActByMemoryCategory(s,5) = sum(idx.BRetrievalPracticeCor .* ~idx.interference .* idx.noCue .* ~idx.junkStim) / N(s,5);
+    res.BRehActByMemoryCategory(s,1) = sum(idx.BRetrievalPracticeCor.* idx.interference .* idx.noCue .* ~idx.junkStim) / N(s,1);
+    res.BRehActByMemoryCategory(s,5) = sum(idx.BRetrievalPracticeCor .* ~idx.interference .* idx.BCued .* ~idx.junkStim) / N(s,5);
+    res.BRehActByMemoryCategory(s,4) = sum(idx.BRetrievalPracticeCor .* ~idx.interference .* idx.noCue .* ~idx.junkStim) / N(s,4);
     
     %was "C" rehearsal performance constant across memory categories?
-    res.CRehActByMemoryCategory(s,1) = sum(idx.CRetrievalPracticeCor .* idx.interference .* idx.CCued .* ~idx.junkStim) / N(s,1);
+    res.CRehActByMemoryCategory(s,3) = sum(idx.CRetrievalPracticeCor .* idx.interference .* idx.CCued .* ~idx.junkStim) / N(s,3);
     res.CRehActByMemoryCategory(s,2) = sum(idx.CRetrievalPracticeCor .* idx.interference .* idx.BCued .* ~idx.junkStim) / N(s,2);
-    res.CRehActByMemoryCategory(s,3) = sum(idx.CRetrievalPracticeCor.* idx.interference .* idx.noCue .* ~idx.junkStim) / N(s,3);
+    res.CRehActByMemoryCategory(s,1) = sum(idx.CRetrievalPracticeCor.* idx.interference .* idx.noCue .* ~idx.junkStim) / N(s,1);
     
     %did "B" rehearsal accuracy affect subsequent test accuracy?
     res.BTestAccByBRehAct(s,1) = sum(idx.correct .* idx.BRetrievalPracticeCor .* ~idx.junkStim) / sum(idx.BRetrievalPracticeCor .* ~idx.junkStim);
@@ -155,11 +155,11 @@ fn = fieldnames(res);
 for f=1:length(fn)
     figure;
     thisRes = res.(fn{f});
-    barweb(mean(thisRes), std(thisRes)/sqrt(size(thisRes,1));
+    barweb(mean(thisRes), std(thisRes)/sqrt(size(thisRes,1)));
 end
 
 
-%% output the data to a csv, so R can read it.
+%% output the data to a csv, so it can be imported into R
 allCorVec = vertcat(corVec_h{:});
 allIntVec = vertcat(intVec_h{:});
 allBCueVec = vertcat(BCueVec_h{:});
