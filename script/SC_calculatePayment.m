@@ -26,12 +26,12 @@ idxShuffle = idxShuffle_h(1:nSubsetTrials);
 
 resps = upper(theData.typedResp(idxShuffle))';
 
-if isfield(d.theData, 'correctAssociate')
-    answers = d.theData.correctAssociate(idxShuffle);
-elseif isfield(d.theData, 'B')
-    answers = d.theData.B;
-elseif isfield(d.theData, 'C')
-    answers = d.theData.C;
+if isfield(theData, 'correctAssociate')
+    answers = theData.correctAssociate(idxShuffle);
+elseif isfield(theData, 'B')
+    answers = theData.B(idxShuffle);
+elseif isfield(theData, 'C')
+    answers = theData.C(idxShuffle);
 else
     error('unrecognized behavioral file')
 end

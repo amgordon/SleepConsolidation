@@ -2,4 +2,6 @@ This repository contains code relevant to the running of a study on memory conso
 
 'Scripts' contains scripts that will present an experiment to subjects via Matlab PsychToolbox.  
 
-'Analysis' contains scripts for analyzing data collected with this experiment.
+'Analysis' contains Matlab and R scripts for analyzing data collected with this experiment.
+
+These scripts require Matlab Psychtoolbox to run.
