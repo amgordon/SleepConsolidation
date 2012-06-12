@@ -35,7 +35,7 @@ allSounds = allSounds.soundList';
 allWords = load('wordList');
 allWords = allWords.wordList';
 
-%load image stims.  
+%load image stims.
 cd(thePath.SVLO);
 dImgs = dir('*.jpg');
 allImgs = {dImgs.name};
@@ -58,7 +58,7 @@ for k=1:nStims.sounds
 end
 condsAssignment = vertcat(condsAssignment_h{:});
 
-%randomly Shuffle sounds, images, and words.  
+%randomly Shuffle sounds, images, and words.
 ShuffledSounds = Shuffle(allSounds);
 ShuffledImgs = Shuffle(allImgs);
 ShuffledWords = Shuffle(allWords);
@@ -82,114 +82,145 @@ ShuffledImgs(1:nPracticeStims) = [];
 ShuffledWords(1:nPracticeStims) = [];
 
 for i = 1:nLists
-        
-        iSound = 1+mod(i-1,nClasses.sounds);
-        
-        thisSubListSoundsIdx = (1:nStims.sounds );
-        thisSubListImgsIdx = (1:nStims.imgs );
-        thisSubListWordsIdx = (1:nStims.words );
-        
-        thisSubList.sounds = ShuffledSounds(thisSubListSoundsIdx)';
-        thisSubList.imgs_h = ShuffledImgs(thisSubListImgsIdx)';
-        thisSubList.words = ShuffledWords(thisSubListWordsIdx)' ;
-        
-        thisSubList.conds = condsAssignment(thisSubListSoundsIdx,iSound);
-
-        % repeat some of the A stimuli
-        idxFirstImgs = ismember(thisSubList.conds, [1:5]);
-        idxRepeatedImgs = ismember(thisSubList.conds, [6:8]);
-        thisSubList.imgs = cell(size(thisSubList.conds));
-        
-        thisSubList.imgs(idxFirstImgs)=thisSubList.imgs_h;
-        condsFirstImages = thisSubList.conds(idxFirstImgs);
-        thisSubList.imgs(idxRepeatedImgs) = thisSubList.imgs_h(ismember(condsFirstImages,[1:3]));
-          
-        % make sure no matched B and C words begin with the same letter.
-        % keep substituting out 'offending' C words that have the same
-        % letter as their B counterpart with other words randomly selected
-        % from the list, until there are no more offending words.  
-        BIntWords = thisSubList.words(ismember(thisSubList.conds, [1:3]));
-        
-        while true
-            potentialCWords = thisSubList.words(ismember(thisSubList.conds, [6:8]));
-            initialC = cellfun(@(x) x(1), BIntWords, 'UniformOutput',false);
-            initialB = cellfun(@(x) x(1), potentialCWords, 'UniformOutput',false);
-            idxSameFirstLetter = strcmp(initialC,initialB);
-            if sum(idxSameFirstLetter)==0
-                break
-            end
-            offendingWords = potentialCWords(idxSameFirstLetter);
-            
-            
-            switchWordsPool = setdiff(potentialCWords, offendingWords);
-            idxSwitchCWords = Shuffle(1:length(switchWordsPool));
-            switchWords = switchWordsPool(idxSwitchCWords(1:length(offendingWords)));
-            
-            idxOffendingWordsInSublist = ismember(thisSubList.words, offendingWords);
-            idxSwitchWordsInSublist = ismember(thisSubList.words, switchWords);
-            
-            thisSubList.words(idxOffendingWordsInSublist) = switchWords;
-            thisSubList.words(idxSwitchWordsInSublist) = offendingWords;
-            
-        end
-
-        
-        % create raw (unShuffled) AB lists       
-        rawList.AB.cue = thisSubList.sounds(ismember(thisSubList.conds, [1:5]));
-        rawList.AB.cond = thisSubList.conds(ismember(thisSubList.conds, [1:5]));
-        rawList.AB.A = thisSubList.imgs(ismember(thisSubList.conds, [1:5]));
-        rawList.AB.B = thisSubList.words(ismember(thisSubList.conds, [1:5]));
-        
-        rawList.AB.subsequentC = cell(size(rawList.AB.cond));
-        rawList.AB.subsequentC(ismember(rawList.AB.cond, [1:3])) = thisSubList.words(ismember(thisSubList.conds, [6:8]));
-        
-        rawList.AB.subsequentACCue = cell(size(rawList.AB.cond));
-        rawList.AB.subsequentACCue(ismember(rawList.AB.cond, [1:3])) = thisSubList.sounds(ismember(thisSubList.conds, [6:8])); 
-           
-        % create raw (unShuffled) AC lists    
-        rawList.AC.cue = thisSubList.sounds(ismember(thisSubList.conds, [6:8]));
-        rawList.AC.cond = thisSubList.conds(ismember(thisSubList.conds, [6:8]));
-        rawList.AC.A = thisSubList.imgs(ismember(thisSubList.conds, [6:8]));
-        rawList.AC.C = thisSubList.words(ismember(thisSubList.conds, [6:8]));
-        rawList.AC.previousB = thisSubList.words(ismember(thisSubList.conds, [1:3]));
-        rawList.AC.previousABCue = thisSubList.sounds(ismember(thisSubList.conds, [1:3]));
-        
-        % create raw (unShuffled) Sleep lists  
-        rawList.Sleep.cue = thisSubList.sounds(ismember(thisSubList.conds, [2 5 6]));
-        rawList.Sleep.cond = thisSubList.conds(ismember(thisSubList.conds, [2 5 6]));
-
-        % create raw (unShuffled) Test lists  
-        rawList.Test.cue = thisSubList.sounds(ismember(thisSubList.conds, [1:5])); %only 'B' cues are presented at test
-        rawList.Test.cond = thisSubList.conds(ismember(thisSubList.conds, [1:5]));
-        rawList.Test.A = thisSubList.imgs(ismember(thisSubList.conds, [1:5]));
-        rawList.Test.correctAssociate = thisSubList.words(ismember(thisSubList.conds, [1:5]));
-         
-        % create permutation indices for shuffling
-        withinABListShuffle = Shuffle(1:length(rawList.AB.cue));
-        withinACListShuffle = Shuffle(1:length(rawList.AC.cue));
-        rehShuffle.AB = Shuffle(1:length(rawList.AB.cue));
-        rehShuffle.AC = Shuffle(1:length(rawList.AC.cue));
-        sleepShuffle = Shuffle(1:length(rawList.Sleep.cue));
-        testShuffle = Shuffle(1:length(rawList.Test.cue));
-        
-        % shuffle lists
-        studyList.AB = indexAllFields(rawList.AB, withinABListShuffle);
-        studyList.AC = indexAllFields(rawList.AC, withinACListShuffle);        
-        rehList.AB = indexAllFields(rawList.AB, rehShuffle.AB); 
-        rehList.AC = indexAllFields(rawList.AC, rehShuffle.AC);        
-        sleepList = indexAllFields(rawList.Sleep, sleepShuffle);
-        testList = indexAllFields(rawList.Test, testShuffle);
-               
-        cd (thePath.list);
-        
-        %save the lists
-        
-        saveMatchedLists(studyList.AB, nSubLists, i);
-        saveLists(sleepList, 'sleepList', 1, i);
-        saveLists(testList, 'testList', 1, i);
-
-        end
     
+    iSound = 1+mod(i-1,nClasses.sounds);
+    
+    thisSubListSoundsIdx = (1:nStims.sounds );
+    thisSubListImgsIdx = (1:nStims.imgs );
+    thisSubListWordsIdx = (1:nStims.words );
+    
+    thisSubList.sounds = ShuffledSounds(thisSubListSoundsIdx)';
+    thisSubList.imgs_h = ShuffledImgs(thisSubListImgsIdx)';
+    thisSubList.words = ShuffledWords(thisSubListWordsIdx)' ;
+    
+    thisSubList.conds = condsAssignment(thisSubListSoundsIdx,iSound);
+    
+    % repeat some of the A stimuli
+    idxFirstImgs = ismember(thisSubList.conds, [1:5]);
+    idxRepeatedImgs = ismember(thisSubList.conds, [6:8]);
+    thisSubList.imgs = cell(size(thisSubList.conds));
+    
+    thisSubList.imgs(idxFirstImgs)=thisSubList.imgs_h;
+    condsFirstImages = thisSubList.conds(idxFirstImgs);
+    
+    % make sure conds [1 6], [2 7] and [3 8] share A terms
+    for j=1:3
+        thisSubList.imgs(thisSubList.conds==(j+5)) = thisSubList.imgs_h(ismember(condsFirstImages,j));
+    end
+    
+    %thisSubList.imgs(idxRepeatedImgs) = thisSubList.imgs_h(ismember(condsFirstImages,[1:3]));
+    
+    % make sure no matched B and C words begin with the same letter.
+    % keep substituting out 'offending' C words that have the same
+    % letter as their B counterpart with other words randomly selected
+    % from the list, until there are no more offending words.
+    BIntWords = thisSubList.words(ismember(thisSubList.conds, [1:3]));
+    
+    while true
+        potentialCWords = thisSubList.words(ismember(thisSubList.conds, [6:8]));
+        initialC = cellfun(@(x) x(1), BIntWords, 'UniformOutput',false);
+        initialB = cellfun(@(x) x(1), potentialCWords, 'UniformOutput',false);
+        idxSameFirstLetter = strcmp(initialC,initialB);
+        if sum(idxSameFirstLetter)==0
+            break
+        end
+        offendingWords = potentialCWords(idxSameFirstLetter);
+        
+        
+        switchWordsPool = setdiff(potentialCWords, offendingWords);
+        idxSwitchCWords = Shuffle(1:length(switchWordsPool));
+        switchWords = switchWordsPool(idxSwitchCWords(1:length(offendingWords)));
+        
+        idxOffendingWordsInSublist = ismember(thisSubList.words, offendingWords);
+        idxSwitchWordsInSublist = ismember(thisSubList.words, switchWords);
+        
+        thisSubList.words(idxOffendingWordsInSublist) = switchWords;
+        thisSubList.words(idxSwitchWordsInSublist) = offendingWords;
+        
+    end
+    
+    
+    % create raw (unShuffled) AB lists
+    rawList.AB.cue = thisSubList.sounds(ismember(thisSubList.conds, [1:5]));
+    rawList.AB.cond = thisSubList.conds(ismember(thisSubList.conds, [1:5]));
+    rawList.AB.A = thisSubList.imgs(ismember(thisSubList.conds, [1:5]));
+    rawList.AB.B = thisSubList.words(ismember(thisSubList.conds, [1:5]));
+    
+    rawList.AB.subsequentC = cell(size(rawList.AB.cond));
+    rawList.AB.subsequentC(ismember(rawList.AB.cond, [1:3])) = thisSubList.words(ismember(thisSubList.conds, [6:8]));
+    
+    rawList.AB.subsequentACCue = cell(size(rawList.AB.cond));
+    rawList.AB.subsequentACCue(ismember(rawList.AB.cond, [1:3])) = thisSubList.sounds(ismember(thisSubList.conds, [6:8]));
+    
+    % create raw (unShuffled) AC lists
+    rawList.AC.cue = thisSubList.sounds(ismember(thisSubList.conds, [6:8]));
+    rawList.AC.cond = thisSubList.conds(ismember(thisSubList.conds, [6:8]));
+    rawList.AC.A = thisSubList.imgs(ismember(thisSubList.conds, [6:8]));
+    rawList.AC.C = thisSubList.words(ismember(thisSubList.conds, [6:8]));
+    rawList.AC.previousB = thisSubList.words(ismember(thisSubList.conds, [1:3]));
+    rawList.AC.previousABCue = thisSubList.sounds(ismember(thisSubList.conds, [1:3]));
+    
+    % create raw (unShuffled) Sleep lists
+    rawList.Sleep.cue = thisSubList.sounds(ismember(thisSubList.conds, [2 5 6]));
+    rawList.Sleep.cond = thisSubList.conds(ismember(thisSubList.conds, [2 5 6]));
+    
+    % create raw (unShuffled) Test lists
+    rawList.Test.cue = thisSubList.sounds(ismember(thisSubList.conds, [1:5])); %only 'B' cues are presented at test
+    rawList.Test.cond = thisSubList.conds(ismember(thisSubList.conds, [1:5]));
+    rawList.Test.A = thisSubList.imgs(ismember(thisSubList.conds, [1:5]));
+    rawList.Test.correctAssociate = thisSubList.words(ismember(thisSubList.conds, [1:5]));
+    
+    % create permutation indices for shuffling
+    withinABListShuffle = Shuffle(1:length(rawList.AB.cue));
+    withinACListShuffle = Shuffle(1:length(rawList.AC.cue));
+    rehShuffle.AB = Shuffle(1:length(rawList.AB.cue));
+    rehShuffle.AC = Shuffle(1:length(rawList.AC.cue));
+    sleepShuffle = Shuffle(1:length(rawList.Sleep.cue));
+    testShuffle = Shuffle(1:length(rawList.Test.cue));
+    
+    % shuffle lists
+    studyList.AB = indexAllFields(rawList.AB, withinABListShuffle);
+    studyList.AC = indexAllFields(rawList.AC, withinACListShuffle);
+    rehList.AB = indexAllFields(rawList.AB, rehShuffle.AB);
+    rehList.AC = indexAllFields(rawList.AC, rehShuffle.AC);
+    sleepList = indexAllFields(rawList.Sleep, sleepShuffle);
+    testList = indexAllFields(rawList.Test, testShuffle);
+    
+    cd (thePath.list);
+    
+    % Ensure that no subjects have both the B and C term from a given 'A' replayed.
+    thisAB = cell(size(sleepList.cue));
+    thisAC = cell(size(sleepList.cue));
+    
+    A_AB = [];
+    A_AC = [];
+    for j = 1:length(sleepList.cue)
+        thisCue = sleepList.cue{j};
+        [~, locAB] =  ismember(thisCue, studyList.AB.cue);
+        [~, locAC] =  ismember(thisCue, studyList.AC.cue);
+        
+        if locAB>0
+            thisAB{j} = studyList.AB.A{locAB};
+            A_AB = [thisAB(j); A_AB];
+        end
+        
+        if locAC>0
+            thisAC{j} = studyList.AC.A{locAC};
+            A_AC = [thisAC(j); A_AC];
+        end
+    end
+    
+    if ~isempty(intersect(A_AB, A_AC))
+        error('AB and AC cue of a single A are both replayed!') ;
+    end
+    
+    %save the lists
+    saveMatchedLists(studyList.AB, nSubLists, i);
+    saveLists(sleepList, 'sleepList', 1, i);
+    saveLists(testList, 'testList', 1, i);
+    
+end
+
 end
 
 function [  ] = saveMatchedLists(list, nSubLists, i)
